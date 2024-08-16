@@ -1,4 +1,5 @@
 import SwiftUI
+import Swinject
 
 struct ContentView: View {
     var body: some View {
@@ -17,6 +18,10 @@ struct BazelApp: App {
         WindowGroup {
             ContentView()
         }
+    }
+    
+    func test() -> Void {
+        Swinject.Container()
     }
 }
 
