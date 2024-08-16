@@ -10,7 +10,8 @@ swift_library(
     name = "lib",
     srcs = glob(["Sources/*.swift"]),
     deps = [
-        "//ThirdLibraries/Swinject"
+        "//ThirdLibraries/Swinject",
+        "//ThirdLibraries/Kingfisher",
         ],
 )
 
