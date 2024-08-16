@@ -9,6 +9,9 @@ load(
 swift_library(
     name = "lib",
     srcs = glob(["Sources/*.swift"]),
+    deps = [
+        "//ThirdLibraries/Swinject"
+        ],
 )
 
 ios_application(
@@ -21,7 +24,9 @@ ios_application(
     infoplists = ["Resources/Info.plist"],
     minimum_os_version = "15.0",
     visibility = ["//visibility:public"],
-    deps = [":lib"],
+    deps = [
+        ":lib",
+        ],
 )
 
 xcodeproj(
