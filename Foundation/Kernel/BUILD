@@ -6,7 +6,8 @@ swift_library(
     module_name = 'Kernel',
 
     deps = [
-        "//ThirdLibraries/Swinject"
+        "//ThirdLibraries/Swinject",
+        "//ThirdLibraries/CocoaLumberjack:CocoaLumberjackSwift",
         ],
 
     visibility = ["//visibility:public"],
