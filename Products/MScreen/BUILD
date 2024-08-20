@@ -28,6 +28,7 @@ ios_application(
     deps = [
         ":lib",
         ],
+     
 )
 
 xcodeproj(
