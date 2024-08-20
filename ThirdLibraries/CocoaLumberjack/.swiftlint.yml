@@ -1,0 +1,18 @@
+disabled_rules:
+  - line_length
+  - function_parameter_count
+  - syntactic_sugar
+  - private_over_fileprivate
+
+opt_in_rules:
+  - empty_count
+  - force_unwrapping
+
+nesting:
+  type_level: 4
+
+identifier_name:
+  allowed_symbols: "_"
+
+mandatory_comma:
+  mandatory_comma: true
