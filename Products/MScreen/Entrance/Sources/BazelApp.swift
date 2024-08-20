@@ -1,6 +1,8 @@
 import SwiftUI
 import Swinject
 import Kingfisher
+import Platform
+import Logger
 
 struct ContentView: View {
     var body: some View {
@@ -16,6 +18,7 @@ struct ContentView: View {
 
 @main
 struct BazelApp: App {
+    @UIApplicationDelegateAdaptor(ScreenKernel.self) var appDelegate
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -23,7 +26,6 @@ struct BazelApp: App {
     }
     
     func test() -> Void {
-        Swinject.Container()
+        
     }
 }
-

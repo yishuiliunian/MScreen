@@ -1,13 +1,13 @@
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
 
 swift_library(
-    name = "Kernel",
+    name = "Platform",
     srcs = glob(["Sources/**/*.swift"]),
-    module_name = 'Kernel',
+    module_name = 'Platform',
 
     deps = [
-        "//ThirdLibraries/Swinject",
-        "//ThirdLibraries/CocoaLumberjack:CocoaLumberjackSwift",
+        "//Foundation/Kernel",
+        "//Foundation/Logger",
         ],
 
     visibility = ["//visibility:public"],

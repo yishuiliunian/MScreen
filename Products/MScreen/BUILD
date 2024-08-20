@@ -6,15 +6,6 @@ load(
     "xcodeproj",
 )
 
-swift_library(
-    name = "lib",
-    srcs = glob(["Sources/*.swift"]),
-    deps = [
-        "//Foundation/Kernel",
-        "//ThirdLibraries/Kingfisher",
-        ],
-)
-
 ios_application(
     name = "iOSApp",
     bundle_id = "build.bazel.rules-apple-example",
@@ -26,7 +17,7 @@ ios_application(
     minimum_os_version = "15.0",
     visibility = ["//visibility:public"],
     deps = [
-        ":lib",
+        "//Products/MScreen/Entrance",
         ],
      
 )
