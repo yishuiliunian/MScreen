@@ -1,0 +1,119 @@
+#!/bin/bash
+
+set -Eeo pipefail
+
+#获取当前目录名
+cur_dir=$(basename "$PWD")
+
+#判断当前目录是否以 bazel- 开头
+if [[ "$cur_dir" != "bazel-"* ]]; then
+  #如果不是以 bazel- 开头，则cd到 bazel-(当前目录名) 下
+  cd bazel-"$cur_dir"
+fi
+
+if [ -z "${DEVELOPER_DIR}" ]; then
+    DEVELOPER_DIR=$(xcode-select -p)
+fi
+export DEVELOPER_DIR
+
+# 支持自定义 sdk
+if [ -z "${SDKROOT}" ]; then
+    if [ -n "${isdevice}" ]; then
+        SDKROOT="${DEVELOPER_DIR}/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS.sdk"
+    elif [ -n "${ismac}" ]; then
+        SDKROOT="${DEVELOPER_DIR}/Platforms/MacOSX.platform/Developer/SDKs/MacOSX.sdk"
+    else
+        SDKROOT="${DEVELOPER_DIR}/Platforms/iPhoneSimulator.platform/Developer/SDKs/iPhoneSimulator.sdk"
+    fi
+fi
+export SDKROOT
+
+params_file=""
+if [[ $1 == "external/build_bazel_rules_swift/tools/worker/worker" || $2 == "swiftc" ]]; then
+    params_file=$3
+    extra_flags="${*:4}"
+elif [[ $1 == "swiftc" ]]; then
+    params_file=$2
+    extra_flags="${*:3}"
+fi
+if [[ "$params_file" == "@"* ]]; then
+    params_file=${params_file: 1}
+fi
+
+echo "${extra_flags}"
+if [[ $params_file ]]; then
+    echo "start swiftc compile"
+    swifc_cmd="swiftc"
+    skip_args=false
+    macro_prefix="-Xwrapped-swift=-macro-expansion-dir="
+    while read -r args; do
+        if [[ $skip_args == "true" ]]; then
+            skip_args=false
+            continue
+        fi
+        if [[ $args == "-Xwrapped-swift=-debug-prefix-pwd-is-dot" ]]; then
+            swifc_cmd="$swifc_cmd -Xcc"
+            new_args="-fdebug-prefix-map=.=."
+        elif [[ $args == "-Xwrapped-swift=-ephemeral-module-cache" ]]; then
+            new_args=""
+        elif [[ $args == "-Xwrapped-swift=-file-prefix-pwd-is-dot" ]]; then
+            swifc_cmd="$swifc_cmd -Xcc"
+            new_args="-ffile-prefix-map=.=."
+        elif [[ $args == "-parseable-output" ]]; then
+            skip_args=true
+            continue
+        elif [[ $args == $macro_prefix* ]]; then
+            export TMPDIR=${args#"$macro_prefix"}
+            continue
+        else
+            # replace string
+            new_args=${args//__BAZEL_XCODE_SDKROOT__/${SDKROOT}}
+            new_args=${new_args//__BAZEL_XCODE_DEVELOPER_DIR__/${DEVELOPER_DIR}}
+        fi
+        swifc_cmd="$swifc_cmd \"${new_args}\""
+
+    done < "$params_file"
+
+    swifc_cmd="$swifc_cmd ${extra_flags} -save-temps -v"
+    echo "$swifc_cmd"
+    eval "$swifc_cmd"
+else
+    if [[ $__WRAPPED_CLANG_LOG_ONLY ]]; then
+        "$@"
+        exit 0
+    fi
+
+    echo "start clang compile"
+    idx=0
+    clang_cmd="clang"
+    for i in "$@"; do
+        let idx+=1
+        if [[ $idx == 1 && $i == "external/local_config_cc/wrapped_clang" ]]; then
+            continue
+        fi
+
+        if [[ $idx == 1 && $i == "external/local_config_cc/wrapped_clang_pp" ]]; then
+            clang_cmd="clang++"
+            continue
+        fi
+
+        if [[ "$i" =~ ^"DSYM_HINT_" ]]; then
+            echo "skip arg $i"
+            continue
+        fi
+
+        if [[ $i == "DEBUG_PREFIX_MAP_PWD=." ]]; then
+            new_args="-fdebug-prefix-map=.=."
+        else
+            # replace string
+            new_args=${i//__BAZEL_XCODE_SDKROOT__/${SDKROOT}}
+            new_args=${new_args//__BAZEL_XCODE_DEVELOPER_DIR__/${DEVELOPER_DIR}}
+        fi
+
+        clang_cmd="$clang_cmd \"${new_args}\""
+    done
+
+    clang_cmd="$clang_cmd -v"
+    echo "$clang_cmd"
+    eval "$clang_cmd"
+fi

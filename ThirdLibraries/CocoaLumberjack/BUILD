@@ -9,10 +9,15 @@ objc_library(
                 "Sources/CocoaLumberjack/**/*.m",
                 "Sources/CocoaLumberjack/include/CocoaLumberjack/*.h",
     ]),
-    hdrs = glob(["Sources/CocoaLumberjack/include/CocoaLumberjack/*.h"]),
+    hdrs = glob([
+        "Sources/CocoaLumberjack/include/CocoaLumberjack/*.h",
+        "Sources/CocoaLumberjack/DDFileLogger+Internal.h",
+        "Sources/CocoaLumberjackSwiftSupport/include/CocoaLumberjackSwiftSupport/SwiftLogLevel.h"
+        ]),
 
     includes = [
-        "Sources/CocoaLumberjack/include/CocoaLumberjack"
+        "Sources/CocoaLumberjack/include",
+        "Sources/CocoaLumberjack",
     ],
     visibility = ["//visibility:public"],
   
