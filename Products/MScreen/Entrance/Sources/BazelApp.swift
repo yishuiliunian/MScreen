@@ -18,7 +18,7 @@ struct ContentView: View {
 
 @main
 struct BazelApp: App {
-    @UIApplicationDelegateAdaptor(ScreenKernel.self) var appDelegate
+    @UIApplicationDelegateAdaptor(ScreenAppDelegate.self) var appDelegate
     var body: some Scene {
         WindowGroup {
             ContentView()
