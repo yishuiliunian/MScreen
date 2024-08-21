@@ -10,14 +10,15 @@ open class LoggerService: LoggerProtocol {
     public func verbose(info: String) {
         print(info)
     }
-    
-    
 }
 
-open class LoggerAssembly: Service {
-    open override func assemble(container: Container) {
-        container.register(LoggerProtocol.self) { r in
-            LoggerService()
-        }
+open class LoggerAssembly: ProcessAssembly {
+    public init() {
+        super.init(name: "LogService")
+    }
+    
+    public override func assemble(container: ServiceContainer) {
+        super.assemble(container: container)
+        container.register(interface: LoggerProtocol.self, service: LoggerService())
     }
 }
