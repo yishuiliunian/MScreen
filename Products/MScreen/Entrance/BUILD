@@ -5,7 +5,9 @@ swift_library(
     srcs = glob(["Sources/*.swift"]),
     deps = [
         "//Foundation/Platform",
+        "//Foundation/LoggerProtocol",
         "//ThirdLibraries/Kingfisher",
+        "//Foundation/UIFoundation/Controls/SegementedControl",
         ],
     module_name = "Entrance",
     visibility = ["//visibility:public"],

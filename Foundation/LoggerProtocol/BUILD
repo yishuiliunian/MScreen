@@ -1,14 +1,13 @@
 load("@build_bazel_rules_swift//swift:swift.bzl", "swift_library")
 
 swift_library(
-    name = "Logger",
+    name = "LoggerProtocol",
+    module_name = 'LoggerProtocol',
+
     srcs = glob(["Sources/**/*.swift"]),
-    module_name = "Logger",
 
     deps = [
-        "//Foundation/LoggerProtocol",
         "//Foundation/Kernel",
-        "//ThirdLibraries/CocoaLumberjack:CocoaLumberjackSwift",
         ],
 
     visibility = ["//visibility:public"],

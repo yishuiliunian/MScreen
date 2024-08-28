@@ -1,3 +1,6 @@
 # Stone's iOS develop 
 
+# Enable Bzlmod for every bazel command
+common --enable_bzlmod
+
 build --remote_cache=http://127.0.0.1:9090 --apple_platform_type=ios

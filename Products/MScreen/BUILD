@@ -36,6 +36,8 @@ ios_extension(
 )
 
 
+
+
 # The Main Application Definitions
 ios_application(
     name = "iOSApp",
@@ -72,11 +74,27 @@ xcodeproj(
     tags = ["manual"],
     top_level_targets = [
         ":iOSApp",
+        ":WidgetExtension",
     ],
 )
 
 
-
+# tools
+genrule(
+    name = "lint",
+    srcs = [],
+    outs = ["lint.sh"],
+    cmd = """
+echo "set -e" > "$@"
+echo "./$(location @buildifier_prebuilt//:buildifier) -lint fix -mode fix -r \\$$BUILD_WORKSPACE_DIRECTORY" >> "$@"
+echo "./$(location @SwiftLint//:swiftlint) --fix \\$$BUILD_WORKSPACE_DIRECTORY" >> "$@"
+""",
+    executable = True,
+    tools = [
+        "@SwiftLint//:swiftlint",
+        "@buildifier_prebuilt//:buildifier",
+    ],
+)
 
 
 

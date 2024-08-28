@@ -1,8 +1,32 @@
 import SwiftUI
 import Swinject
 import Kingfisher
-import Platform
-import Logger
+import LoggerProtocol
+import SegementedControl
+
+
+struct WidgetSegmentedContro: View {
+    @State private var selectedItem: WidgetTag? = WidgetTag.allTags().first
+    var body: some View {
+        VStack {
+            SegementedControl(WidgetTag.allTags(), selection: selectedItem) { item in
+                Text(item.name)
+                    .font(Font.footnote.weight(.medium))
+                    .foregroundStyle(selectedItem == item ? .white : .black)
+                    .padding(.vertical, 8)
+                    .padding(.horizontal, 8)
+                    .frame(maxWidth: .infinity)
+                    .multilineTextAlignment(.center)
+                    .onTapGesture {
+                        withAnimation {
+                            selectedItem = item
+                        }
+                    }
+                
+            }.padding()
+        }
+    }
+}
 
 struct PlayButton: View {
     @Binding var isPlaying: Bool
@@ -25,14 +49,11 @@ struct ContentView: View {
     @State private var palyState = PlayState()
     @State private var isPlaying: Bool = false
     var body: some View {
-        VStack {
-            PlayButton(isPlaying: $isPlaying)
-
-            KFImage(URL(string:"https://p0.itc.cn/images01/20220125/f9e51d106a97408296b05784e3040d1c.jpeg"))
-            Image(systemName: "globe")
-                            .imageScale(.large)
-                            .foregroundStyle(.tint)
-                        Text("Hello, world!")
+        ScrollViewReader { _ in
+            VStack() {
+                WidgetSegmentedContro()
+                Spacer()
+            }.padding()
         }
     }
 }
@@ -45,6 +66,7 @@ struct WidgetsListView: View {
         }
     }
 }
+
 @main
 struct BazelApp: App {
     @UIApplicationDelegateAdaptor(ScreenAppDelegate.self) var appDelegate
@@ -60,10 +82,8 @@ struct BazelApp: App {
                         Label("Widgets", systemImage: "square.and.pencil")
                     }
             }
-          
         }
     }
-    
     func test() -> Void {
         
     }
