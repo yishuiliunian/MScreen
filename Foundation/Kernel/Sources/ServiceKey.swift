@@ -20,7 +20,6 @@ internal struct ServiceKey {
 }
 
 // MARK: Hashable
-
 extension ServiceKey: Hashable {
     public func hash(into hasher: inout Hasher) {
         ObjectIdentifier(serviceType).hash(into: &hasher)

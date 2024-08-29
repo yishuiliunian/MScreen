@@ -6,27 +6,31 @@
 //
 
 import Foundation
+import ObjectMapper
 
-struct WidgetTag: Identifiable, Hashable {
+struct WidgetTag: Identifiable, Hashable, Mappable {
+    
+    
     var id: String {
-        return name
+        return identifier
     }
-    var name: String
-    var identifier: String
+    var name: String!
+    var identifier: String!
     init(identifier: String, name: String) {
         self.identifier = identifier
         self.name = name
     }
     
-    static func allTags() -> [WidgetTag] {
-        return [
-            WidgetTag(identifier: "hot", name: "热门"),
-            WidgetTag(identifier: "new", name: "最新"),
-            WidgetTag(identifier: "all", name: "全部")
-        ]
-    }
-    
     public func hash(into hasher: inout Hasher) {
         name.hash(into: &hasher)
+    }
+    
+    //MARK: Mappable
+    init?(map: ObjectMapper.Map) {
+    }
+    
+    mutating func mapping(map: ObjectMapper.Map) {
+        identifier <- map["identifier"]
+        name <- map["name"]
     }
 }

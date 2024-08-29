@@ -1,10 +1,20 @@
 import SwiftUI
 
-public struct SegementedControl<Data, Content>: View where Data: Hashable, Content: View {
+public struct SegementedControl<Data, SegmentHeader, SegmentContent>:
+    View where Data: Hashable,
+               SegmentHeader: View,
+               SegmentContent: View
+{
+    // The data sources.
     public let sources: [Data]
-    public let selection: Data?
     
-    private let itemBuilder: (Data) -> Content
+    // The selection data. If nil, the first item will be selected.
+    public var selection: Data?
+    
+    // The header builder.
+    private let headerBuilder: (Data) -> SegmentHeader
+    // The content builder.
+    private let contentBuilder: (Data) -> SegmentContent
     
     @State private var backgroundColor: Color = Color.black.opacity(0.05)
     
@@ -42,23 +52,26 @@ public struct SegementedControl<Data, Content>: View where Data: Hashable, Conte
     
     public init(_ sources: [Data],
                 selection: Data?,
-                indicatorBuilder: @escaping() -> some View,
-                @ViewBuilder itemBuilder: @escaping (Data) -> Content) {
+                @ViewBuilder headerBuilder: @escaping (Data) -> SegmentHeader,
+                @ViewBuilder contentBuilder: @escaping (Data) -> SegmentContent) {
         self.sources = sources
         self.selection = selection
-        self.itemBuilder = itemBuilder
-        self.customIndicator = AnyView(indicatorBuilder())
+        self.contentBuilder = contentBuilder
+        self.headerBuilder = headerBuilder
     }
     
-    public init(_ sources: [Data],
-                selection: Data?,
-                @ViewBuilder itemBuilder: @escaping (Data) -> Content) {
-        self.sources = sources
-        self.selection = selection
-        self.itemBuilder = itemBuilder
+    private var contentView: some View {
+        TabView {
+            ForEach(sources, id: \.self) { source in
+                contentBuilder(source)
+                    .frame(width: UIScreen.main.bounds.width)
+            }
+        }.tabViewStyle(.page(indexDisplayMode: .never))
+            .indexViewStyle(.page(backgroundDisplayMode: .never))
+        
     }
     
-    public var body: some View {
+    private var headerView: some View {
         ZStack(alignment: .center, content: {
             if let selection = selection, let selectedIndex = sources.firstIndex(of: selection) {
                 if let customIndicator = customIndicator {
@@ -78,7 +91,7 @@ public struct SegementedControl<Data, Content>: View where Data: Hashable, Conte
             
             HStack(spacing: 0, content: {
                 ForEach(sources, id: \.self) { source in
-                    itemBuilder(source)
+                    headerBuilder(source)
                 }
             })
         }).background(
@@ -88,5 +101,11 @@ public struct SegementedControl<Data, Content>: View where Data: Hashable, Conte
                 )
         )
     }
+    
+    public var body: some View {
+        headerView
+        contentView
+    }
+    
 }
 
