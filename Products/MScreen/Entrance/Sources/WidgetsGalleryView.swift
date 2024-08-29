@@ -13,6 +13,8 @@ struct WidgetSegmentedControl: View {
         self.widgetRows = widgetRows
     }
     
+    @State private var width: CGFloat = 50
+    
 
     var body: some View {
         VStack {
@@ -35,6 +37,11 @@ struct WidgetSegmentedControl: View {
                               contentBuilder:  { item in
                 VStack {
                     Text(item.tag.name)
+                        .frame(width: self.width, height: 120)
+                        .border(Color.blue, width: 2)
+                    
+                    Text("Offered Width \(Int(width))")
+                    Slider(value: $width, in: 0...200, step: 1)
                     Spacer()
                 }
             })

@@ -4,8 +4,6 @@ import Kingfisher
 import LoggerProtocol
 import SegementedControl
 
-
-
 @main
 struct BazelApp: App {
     @UIApplicationDelegateAdaptor(ScreenAppDelegate.self) var appDelegate
